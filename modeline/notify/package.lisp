@@ -3,4 +3,5 @@
 	#:stumpwm
 	#:bordeaux-threads
 	#:queues)
-  (:export notify-modeline-toggle))
+  (:export notify-modeline-toggle
+	   *current-message*))
