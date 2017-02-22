@@ -28,6 +28,9 @@
 (defvar *current-message* ""
   "Message that is currently shown in modeline")
 
+(defvar *old-handler* nil
+  "Storage for previous notification handler")
+
 (defun notification-handler (app icon summary body)
   "Set the *last-message* text to the text from incoming notification"
   (declare (ignore app icon))
@@ -49,6 +52,7 @@
 
 (defun notify-modeline-on ()
   "Start showing the messages"
+  (setf *old-handler* notify:*notification-received-hook*)
   (setf notify:*notification-received-hook* #'notification-handler)
   (with-lock-held (*running-lock*)
     (setf *notify-modeline-is-on* T))
@@ -58,7 +62,7 @@
 
 (defun notify-modeline-off ()
   "Stop showing the messages"
-  (setf notify:*notification-received-hook* #'notify::show-notification)
+  (setf notify:*notification-received-hook* *old-handler*)
   (with-lock-held (*running-lock*)
     (setf *notify-modeline-is-on* nil))
   (condition-notify *message-received*)
